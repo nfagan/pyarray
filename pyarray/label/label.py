@@ -37,7 +37,7 @@ class Label(collections.MutableMapping):
 
 		assert all(values.count(label) == 1 for label in other) is True, \
 		"""Requested term appears in multiple fields --
-		indexing with '==' would be ambiguous. Use Label.only() instead
+		indexing with 'in' would be ambiguous. Use Label.only() instead
 		"""
 		return True
 
