@@ -1,3 +1,4 @@
+from copy import deepcopy
 import collections
 
 class Label(collections.MutableMapping):
@@ -42,7 +43,15 @@ class Label(collections.MutableMapping):
 		return True
 
 	def __getitem__(self, key):
-		return self.labels[self.__keytransform__(key)]
+		assert isinstance(key, str) is True, \
+		'Can only lookup string keys'
+
+		key = self.__keytransform__(key)
+
+		assert key in self.keys(), \
+		'The requested key ''%s'' is not in the Label object' % key
+
+		return self.labels[key]
 
 	def __setitem__(self, key, value):
 		self.labels[self.__keytransform__(key)] = self.ensure_str_list(value)
@@ -86,5 +95,32 @@ class Label(collections.MutableMapping):
 
 	def iskey(self, key):
 		return key in self.keys()
+
+	def findkey(self, value):
+		if value not in self:
+			return list()
+
+		return [key for key in self.keys() if value in self[key]][0]
+
+	def replace(self, searchfor, repwith):
+		assert all([isinstance(searchfor, str), isinstance(repwith, str)]), \
+		'<searchfor> and <repwith> must be strings'
+
+		if searchfor not in self:
+			return False 	#	we couldn't find the term
+
+		key = self.findkey(searchfor)
+		self[key].remove(searchfor)
+		self[key].append(repwith)
+		self[key] = list(set(self[key]))
+
+		return True		#	we found the term we were looking for
+
+
+
+
+
+
+
 
 		
