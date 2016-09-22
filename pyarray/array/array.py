@@ -1,6 +1,8 @@
 from copy import deepcopy
 from ..label.label import Label
 from ..datapoint.datapoint import Point
+from itertools import product
+import numpy as np
 
 class Array(object):
 	def __init__(self, points):
@@ -75,4 +77,27 @@ class Array(object):
 		for key in self.keys():
 			uniqs[key] = self[key]
 		return uniqs
+
+	def getcombs(self, within):
+		assert isinstance(within, list), 'within must be a list of strings'
+		assert all([isinstance(item, str) for item in within]), \
+		'within must be a list of strings'
+
+		labels = [self[key] for key in within]
+		return list(product(*labels))
+
+	def getindices(self, within):
+		combs = self.getcombs(within)
+		return [self.find(list(comb)) for comb in combs if len(self.find(list(comb))) > 0]
+
+	def index(self, indices):
+		assert isinstance(indices, list), 'indices must be a list'
+		return Array([self.points[i] for i in indices])
+
+	def getdata(self):
+		arrays = [point.data for point in self.points]
+		return np.concatenate(arrays,axis=0)
+
+
+
 
